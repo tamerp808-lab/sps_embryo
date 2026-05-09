@@ -1,0 +1,1381 @@
+<!DOCTYPE html>
+<html lang="ar" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+
+<title>SPS Embryo — Cinematic AI OS</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap');
+
+:root{
+    --bg:#030712;
+    --surface:rgba(15,23,42,.72);
+    --surface2:rgba(20,30,55,.82);
+    --border:rgba(99,102,241,.18);
+
+    --primary:#818cf8;
+    --primaryGlow:rgba(129,140,248,.45);
+
+    --secondary:#6366f1;
+
+    --accent:#22d3ee;
+    --accentGlow:rgba(34,211,238,.4);
+
+    --danger:#ef4444;
+    --warning:#f59e0b;
+
+    --text:#e2e8f0;
+    --muted:#94a3b8;
+
+    --radius:16px;
+    --shadow:0 20px 60px rgba(0,0,0,.55);
+}
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+html{
+    scroll-behavior:smooth;
+}
+
+body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Inter',sans-serif;
+    overflow:hidden;
+    height:100vh;
+}
+
+/* BACKGROUND */
+
+.bg{
+    position:fixed;
+    inset:0;
+    overflow:hidden;
+    z-index:0;
+}
+
+.orb{
+    position:absolute;
+    border-radius:50%;
+    filter:blur(120px);
+    opacity:.25;
+    animation:float 18s ease-in-out infinite;
+}
+
+.orb1{
+    width:500px;
+    height:500px;
+    background:var(--primary);
+    top:-180px;
+    left:-120px;
+}
+
+.orb2{
+    width:450px;
+    height:450px;
+    background:var(--accent);
+    bottom:-150px;
+    right:-100px;
+    animation-delay:-6s;
+}
+
+.orb3{
+    width:320px;
+    height:320px;
+    background:var(--secondary);
+    top:40%;
+    left:45%;
+    animation-delay:-10s;
+}
+
+@keyframes float{
+    0%,100%{
+        transform:translate(0,0) scale(1);
+    }
+    33%{
+        transform:translate(40px,-20px) scale(1.1);
+    }
+    66%{
+        transform:translate(-25px,25px) scale(.9);
+    }
+}
+
+.grid{
+    position:fixed;
+    inset:0;
+    background-image:
+        linear-gradient(rgba(129,140,248,.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(129,140,248,.04) 1px, transparent 1px);
+    background-size:50px 50px;
+    z-index:0;
+    animation:gridMove 20s linear infinite;
+}
+
+@keyframes gridMove{
+    from{
+        transform:translate(0,0);
+    }
+    to{
+        transform:translate(50px,50px);
+    }
+}
+
+/* TOPBAR */
+
+.topbar{
+    position:relative;
+    z-index:100;
+    height:56px;
+
+    display:flex;
+    align-items:center;
+    gap:16px;
+
+    padding:0 18px;
+
+    background:rgba(3,7,18,.72);
+    backdrop-filter:blur(24px);
+
+    border-bottom:1px solid var(--border);
+}
+
+.logo{
+    font-size:24px;
+    font-weight:800;
+    letter-spacing:-1px;
+
+    background:linear-gradient(135deg,var(--primary),var(--accent));
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+
+    cursor:pointer;
+}
+
+.status{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-size:12px;
+    color:var(--accent);
+}
+
+.dot{
+    width:8px;
+    height:8px;
+    border-radius:50%;
+    background:var(--accent);
+    box-shadow:0 0 14px var(--accentGlow);
+    animation:pulse 2s infinite;
+}
+
+@keyframes pulse{
+    0%,100%{
+        transform:scale(1);
+        opacity:1;
+    }
+    50%{
+        transform:scale(1.5);
+        opacity:.5;
+    }
+}
+
+.spacer{
+    flex:1;
+}
+
+.metrics{
+    display:flex;
+    gap:14px;
+    font-size:12px;
+    color:var(--muted);
+}
+
+.metrics span{
+    color:var(--text);
+    font-weight:700;
+}
+
+/* LAYOUT */
+
+.layout{
+    position:relative;
+    z-index:1;
+
+    display:flex;
+    height:calc(100vh - 56px);
+}
+
+/* SIDEBAR */
+
+.sidebar{
+    width:240px;
+
+    background:rgba(15,23,42,.6);
+    backdrop-filter:blur(20px);
+
+    border-right:1px solid var(--border);
+
+    overflow-y:auto;
+
+    padding:10px;
+}
+
+.sidebar-title{
+    color:var(--muted);
+    font-size:10px;
+    font-weight:700;
+    letter-spacing:1.6px;
+    text-transform:uppercase;
+
+    padding:14px 12px 8px;
+}
+
+.nav{
+    display:flex;
+    flex-direction:column;
+    gap:2px;
+}
+
+.nav-item{
+    padding:12px;
+    border-radius:12px;
+
+    color:var(--muted);
+    font-size:13px;
+    font-weight:600;
+
+    cursor:pointer;
+
+    transition:.25s;
+
+    position:relative;
+    overflow:hidden;
+}
+
+.nav-item::before{
+    content:'';
+    position:absolute;
+    left:0;
+    top:0;
+    width:3px;
+    height:100%;
+    background:var(--primary);
+
+    transform:scaleY(0);
+    transition:.25s;
+}
+
+.nav-item:hover{
+    background:rgba(129,140,248,.08);
+    color:var(--text);
+}
+
+.nav-item:hover::before{
+    transform:scaleY(1);
+}
+
+.nav-item.active{
+    background:rgba(129,140,248,.15);
+    color:var(--primary);
+}
+
+.nav-item.active::before{
+    transform:scaleY(1);
+}
+
+/* CONTENT */
+
+.content{
+    flex:1;
+    overflow-y:auto;
+    padding:20px;
+}
+
+.tab{
+    display:none;
+    animation:fade .35s ease;
+}
+
+.tab.active{
+    display:block;
+}
+
+@keyframes fade{
+    from{
+        opacity:0;
+        transform:translateY(8px);
+    }
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+
+/* CARDS */
+
+.card{
+    background:var(--surface);
+    backdrop-filter:blur(18px);
+
+    border:1px solid var(--border);
+
+    border-radius:var(--radius);
+
+    padding:20px;
+
+    box-shadow:var(--shadow);
+
+    margin-bottom:16px;
+
+    position:relative;
+    overflow:hidden;
+
+    transition:.3s;
+}
+
+.card:hover{
+    transform:translateY(-2px);
+    border-color:rgba(129,140,248,.35);
+}
+
+.card::after{
+    content:'';
+    position:absolute;
+    top:0;
+    left:0;
+    width:100%;
+    height:1px;
+
+    background:linear-gradient(
+        90deg,
+        transparent,
+        var(--primaryGlow),
+        transparent
+    );
+
+    opacity:0;
+    transition:.3s;
+}
+
+.card:hover::after{
+    opacity:1;
+}
+
+.card-title{
+    color:var(--primary);
+    font-size:12px;
+    font-weight:800;
+    text-transform:uppercase;
+    letter-spacing:1.3px;
+    margin-bottom:14px;
+}
+
+/* GRID */
+
+.grid2{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:16px;
+}
+
+.grid3{
+    display:grid;
+    grid-template-columns:1fr 1fr 1fr;
+    gap:16px;
+}
+
+/* BUTTONS */
+
+.btn{
+    border:none;
+    outline:none;
+
+    cursor:pointer;
+
+    border-radius:12px;
+
+    padding:10px 18px;
+
+    font-size:13px;
+    font-weight:700;
+
+    transition:.25s;
+
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:6px;
+
+    position:relative;
+    overflow:hidden;
+}
+
+.btn::after{
+    content:'';
+    position:absolute;
+    top:50%;
+    left:50%;
+    width:0;
+    height:0;
+
+    border-radius:50%;
+    background:rgba(255,255,255,.15);
+
+    transform:translate(-50%,-50%);
+    transition:.6s;
+}
+
+.btn:active::after{
+    width:300px;
+    height:300px;
+}
+
+.btn-primary{
+    background:linear-gradient(135deg,var(--primary),var(--secondary));
+    color:white;
+    box-shadow:0 10px 28px var(--primaryGlow);
+}
+
+.btn-primary:hover{
+    transform:translateY(-2px);
+}
+
+.btn-accent{
+    background:linear-gradient(135deg,var(--accent),#0ea5e9);
+    color:#001018;
+    box-shadow:0 10px 28px var(--accentGlow);
+}
+
+.btn-outline{
+    background:transparent;
+    border:1px solid var(--border);
+    color:var(--text);
+}
+
+.btn-outline:hover{
+    border-color:var(--primary);
+    color:var(--primary);
+}
+
+/* INPUTS */
+
+input,
+textarea{
+    width:100%;
+
+    border:1px solid var(--border);
+
+    background:rgba(0,0,0,.35);
+
+    color:var(--text);
+
+    border-radius:12px;
+
+    padding:12px 14px;
+
+    outline:none;
+
+    font-size:13px;
+
+    transition:.2s;
+}
+
+input:focus,
+textarea:focus{
+    border-color:var(--primary);
+    box-shadow:0 0 0 3px rgba(129,140,248,.18);
+}
+
+/* BUILDER */
+
+.builder{
+    display:flex;
+    gap:16px;
+    height:calc(100vh - 150px);
+}
+
+.left{
+    width:320px;
+    display:flex;
+    flex-direction:column;
+    gap:16px;
+}
+
+.center{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+}
+
+.toolbar{
+    display:flex;
+    gap:6px;
+    flex-wrap:wrap;
+}
+
+.editor{
+    flex:1;
+
+    background:#090d18;
+
+    border:1px solid var(--border);
+
+    border-radius:16px;
+
+    padding:16px;
+
+    color:#d6e2ff;
+
+    font-family:'Fira Code',monospace;
+    font-size:12px;
+
+    resize:none;
+
+    outline:none;
+}
+
+.preview{
+    flex:1;
+    border:none;
+    border-radius:16px;
+    background:white;
+    display:none;
+}
+
+/* CHAT */
+
+.chat{
+    width:320px;
+
+    background:var(--surface2);
+
+    border-left:1px solid var(--border);
+
+    display:flex;
+    flex-direction:column;
+
+    padding:14px;
+
+    gap:10px;
+}
+
+.chat-messages{
+    flex:1;
+    overflow-y:auto;
+
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+}
+
+.msg{
+    padding:12px 14px;
+    border-radius:16px;
+    font-size:12px;
+    max-width:90%;
+    line-height:1.5;
+}
+
+.msg.agent{
+    align-self:flex-start;
+    background:rgba(129,140,248,.14);
+    border-bottom-left-radius:4px;
+}
+
+.msg.user{
+    align-self:flex-end;
+    background:rgba(34,211,238,.14);
+    border-bottom-right-radius:4px;
+}
+
+.agent-card{
+    display:flex;
+    align-items:center;
+    gap:12px;
+
+    background:rgba(15,23,42,.45);
+
+    border:1px solid var(--border);
+
+    border-radius:14px;
+
+    padding:14px;
+
+    transition:.25s;
+}
+
+.agent-card:hover{
+    transform:translateY(-2px);
+    border-color:rgba(129,140,248,.4);
+}
+
+.agent-dot{
+    width:10px;
+    height:10px;
+    border-radius:50%;
+}
+
+.agent-dot.running{
+    background:var(--accent);
+    box-shadow:0 0 10px var(--accentGlow);
+}
+
+.agent-dot.idle{
+    background:var(--muted);
+}
+
+.empty{
+    text-align:center;
+    color:var(--muted);
+    padding:30px;
+}
+
+/* MOBILE */
+
+@media(max-width:900px){
+
+    .sidebar{
+        display:none;
+    }
+
+    .grid2,
+    .grid3{
+        grid-template-columns:1fr;
+    }
+
+    .builder{
+        flex-direction:column;
+        height:auto;
+    }
+
+    .left{
+        width:100%;
+    }
+
+    .chat{
+        width:100%;
+    }
+
+    .metrics{
+        display:none;
+    }
+}
+
+/* SCROLLBAR */
+
+::-webkit-scrollbar{
+    width:5px;
+}
+
+::-webkit-scrollbar-thumb{
+    background:rgba(129,140,248,.3);
+    border-radius:999px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="bg">
+    <div class="orb orb1"></div>
+    <div class="orb orb2"></div>
+    <div class="orb orb3"></div>
+</div>
+
+<div class="grid"></div>
+
+<div class="topbar">
+
+    <div class="logo" onclick="switchTab('dashboard')">
+        SPS Embryo
+    </div>
+
+    <div class="status">
+        <div class="dot"></div>
+        <span id="runtimeStatus">Runtime Online</span>
+    </div>
+
+    <div class="spacer"></div>
+
+    <div class="metrics">
+        CPU <span id="cpuVal">--</span>
+        RAM <span id="ramVal">--</span>
+        EPS <span id="epsVal">--</span>
+    </div>
+
+</div>
+
+<div class="layout">
+
+    <aside class="sidebar">
+
+        <div class="sidebar-title">Overview</div>
+
+        <div class="nav">
+
+            <div class="nav-item active" onclick="switchTab('dashboard')">
+                📊 Dashboard
+            </div>
+
+            <div class="nav-item" onclick="switchTab('agents')">
+                🤖 Agents
+            </div>
+
+            <div class="nav-item" onclick="switchTab('builder')">
+                🏗 Site Builder
+            </div>
+
+            <div class="nav-item" onclick="switchTab('logs')">
+                📋 Logs
+            </div>
+
+        </div>
+
+    </aside>
+
+    <main class="content">
+
+        <!-- DASHBOARD -->
+
+        <section class="tab active" id="tab-dashboard">
+
+            <div class="grid2">
+
+                <div class="card">
+
+                    <div class="card-title">
+                        ⚡ Quick Execute
+                    </div>
+
+                    <input
+                        id="quickTask"
+                        placeholder="اكتب مهمة..."
+                        style="margin-bottom:10px"
+                        onkeydown="if(event.key==='Enter')quickExecute()"
+                    >
+
+                    <button
+                        class="btn btn-primary"
+                        onclick="quickExecute()"
+                    >
+                        Execute
+                    </button>
+
+                    <div
+                        id="quickResult"
+                        style="margin-top:12px;font-size:12px"
+                    ></div>
+
+                </div>
+
+                <div class="card">
+
+                    <div class="card-title">
+                        📈 Runtime Metrics
+                    </div>
+
+                    <div id="metricsBox">
+                        Waiting for metrics...
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="card">
+
+                <div class="card-title">
+                    📋 Runtime Logs
+                </div>
+
+                <div
+                    id="logsBox"
+                    style="
+                        max-height:400px;
+                        overflow:auto;
+                        font-family:'Fira Code',monospace;
+                        font-size:11px;
+                    "
+                >
+                    <div class="empty">
+                        Waiting for runtime events...
+                    </div>
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- AGENTS -->
+
+        <section class="tab" id="tab-agents">
+
+            <div class="card">
+
+                <div class="card-title">
+                    🤖 Active Agents
+                </div>
+
+                <div class="grid3" id="agentsGrid">
+
+                    <div class="agent-card">
+                        <div class="agent-dot running"></div>
+                        <div>
+                            <strong>SiteBuilderAgent</strong>
+                            <br>
+                            <small>running</small>
+                        </div>
+                    </div>
+
+                    <div class="agent-card">
+                        <div class="agent-dot idle"></div>
+                        <div>
+                            <strong>MemoryAgent</strong>
+                            <br>
+                            <small>idle</small>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- BUILDER -->
+
+        <section class="tab" id="tab-builder">
+
+            <div class="builder">
+
+                <!-- LEFT -->
+
+                <div class="left">
+
+                    <div class="card">
+
+                        <div class="card-title">
+                            🏗 Build Site
+                        </div>
+
+                        <input
+                            id="siteName"
+                            placeholder="Project name..."
+                            style="margin-bottom:8px"
+                        >
+
+                        <textarea
+                            id="siteDesc"
+                            rows="4"
+                            placeholder="Describe your cinematic AI website..."
+                            style="margin-bottom:8px"
+                        ></textarea>
+
+                        <button
+                            class="btn btn-primary"
+                            onclick="buildSite()"
+                            style="width:100%"
+                        >
+                            🚀 Build Project
+                        </button>
+
+                        <button
+                            class="btn btn-accent"
+                            onclick="toggleChat()"
+                            style="width:100%;margin-top:8px"
+                        >
+                            💬 AI Assistant
+                        </button>
+
+                        <div
+                            id="buildStatus"
+                            style="
+                                margin-top:10px;
+                                font-size:12px;
+                                color:var(--muted);
+                            "
+                        ></div>
+
+                    </div>
+
+                </div>
+
+                <!-- CENTER -->
+
+                <div class="center">
+
+                    <div class="toolbar">
+
+                        <button
+                            class="btn btn-outline"
+                            onclick="openFile('index.html')"
+                        >
+                            HTML
+                        </button>
+
+                        <button
+                            class="btn btn-outline"
+                            onclick="openFile('style.css')"
+                        >
+                            CSS
+                        </button>
+
+                        <button
+                            class="btn btn-outline"
+                            onclick="openFile('script.js')"
+                        >
+                            JS
+                        </button>
+
+                        <button
+                            class="btn btn-primary"
+                            onclick="togglePreview()"
+                        >
+                            👁 Preview
+                        </button>
+
+                        <button
+                            class="btn btn-accent"
+                            onclick="saveEdits()"
+                        >
+                            💾 Save
+                        </button>
+
+                    </div>
+
+                    <textarea
+                        class="editor"
+                        id="editor"
+                        placeholder="Generated code appears here..."
+                    ></textarea>
+
+                    <iframe
+                        class="preview"
+                        id="preview"
+                    ></iframe>
+
+                </div>
+
+                <!-- CHAT -->
+
+                <aside class="chat" id="chatPanel" style="display:none">
+
+                    <div class="card-title">
+                        💬 AI Assistant
+                    </div>
+
+                    <div class="chat-messages" id="chatMessages">
+
+                        <div class="msg agent">
+                            🤖 Hello. I can modify your generated site in real time.
+                        </div>
+
+                    </div>
+
+                    <div style="display:flex;gap:6px">
+
+                        <input
+                            id="chatInput"
+                            placeholder="Ask AI to modify..."
+                            onkeydown="if(event.key==='Enter')sendChat()"
+                        >
+
+                        <button
+                            class="btn btn-primary"
+                            onclick="sendChat()"
+                        >
+                            Send
+                        </button>
+
+                    </div>
+
+                </aside>
+
+            </div>
+
+        </section>
+
+        <!-- LOGS -->
+
+        <section class="tab" id="tab-logs">
+
+            <div class="card">
+
+                <div class="card-title">
+                    📋 Full Logs
+                </div>
+
+                <div
+                    id="fullLogs"
+                    style="
+                        max-height:600px;
+                        overflow:auto;
+                        font-family:'Fira Code',monospace;
+                        font-size:11px;
+                    "
+                >
+                    <div class="empty">
+                        Runtime initialized.
+                    </div>
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+<script>
+const WS_URL = 'ws://' + location.hostname + ':9103';
+
+let ws;
+
+let projectFiles = {
+    'index.html':'',
+    'style.css':'',
+    'script.js':''
+};
+
+let currentFile = 'index.html';
+
+function connectWS(){
+
+    try{
+
+        ws = new WebSocket(WS_URL);
+
+        ws.onopen = () => {
+            document.getElementById('runtimeStatus').textContent =
+                'Runtime Online';
+        };
+
+        ws.onmessage = (e) => {
+
+            try{
+
+                const data = JSON.parse(e.data);
+
+                if(data.metrics){
+
+                    document.getElementById('cpuVal').textContent =
+                        data.metrics.cpu || '--';
+
+                    document.getElementById('ramVal').textContent =
+                        data.metrics.ram_free_mb || '--';
+
+                    document.getElementById('epsVal').textContent =
+                        data.metrics.events_per_sec || '--';
+
+                    document.getElementById('metricsBox').innerHTML = `
+                        CPU: ${data.metrics.cpu || '--'}%
+                        <br><br>
+                        RAM: ${data.metrics.ram_free_mb || '--'} MB
+                        <br><br>
+                        Events/sec: ${data.metrics.events_per_sec || '--'}
+                    `;
+                }
+
+            }catch(err){
+                console.error(err);
+            }
+
+        };
+
+        ws.onclose = () => {
+            document.getElementById('runtimeStatus').textContent =
+                'Reconnecting...';
+
+            setTimeout(connectWS,3000);
+        };
+
+    }catch(err){
+        console.error(err);
+    }
+}
+
+connectWS();
+
+function switchTab(name){
+
+    document
+        .querySelectorAll('.tab')
+        .forEach(t => t.classList.remove('active'));
+
+    document
+        .querySelectorAll('.nav-item')
+        .forEach(n => n.classList.remove('active'));
+
+    document
+        .getElementById('tab-' + name)
+        .classList.add('active');
+
+    event.target.classList.add('active');
+}
+
+async function quickExecute(){
+
+    const input = document.getElementById('quickTask');
+
+    const task = input.value.trim();
+
+    if(!task) return;
+
+    document.getElementById('quickResult').innerHTML =
+        '⏳ Executing...';
+
+    try{
+
+        const res = await fetch('/execute',{
+            method:'POST',
+            headers:{
+                'Content-Type':'application/json'
+            },
+            body:JSON.stringify({
+                goal:task
+            })
+        });
+
+        const txt = await res.text();
+
+        document.getElementById('quickResult').innerHTML =
+            txt;
+
+    }catch(err){
+
+        document.getElementById('quickResult').innerHTML =
+            '❌ ' + err.message;
+    }
+}
+
+async function buildSite(){
+
+    const desc =
+        document.getElementById('siteDesc')
+        .value
+        .trim();
+
+    if(!desc) return;
+
+    const status =
+        document.getElementById('buildStatus');
+
+    status.innerHTML =
+        '🧠 Initializing cinematic generation...';
+
+    try{
+
+        const res = await fetch('/site/build_project',{
+            method:'POST',
+            headers:{
+                'Content-Type':'application/json'
+            },
+            body:JSON.stringify({
+                description:desc
+            })
+        });
+
+        const raw = await res.text();
+
+        console.log(raw);
+
+        let data;
+
+        try{
+            data = JSON.parse(raw);
+        }catch(parseErr){
+
+            status.innerHTML = `
+                <span style="color:var(--danger)">
+                    ❌ Invalid JSON response
+                </span>
+            `;
+
+            console.error(parseErr);
+
+            return;
+        }
+
+        console.log(data);
+
+        const html =
+            data.html ||
+            data.index_html ||
+            '';
+
+        const css =
+            data.css ||
+            '';
+
+        const js =
+            data.js ||
+            '';
+
+        if(html.length > 0){
+
+            projectFiles = {
+                'index.html':html,
+                'style.css':css,
+                'script.js':js
+            };
+
+            currentFile = 'index.html';
+
+            document.getElementById('editor').value =
+                html;
+
+            updatePreview();
+
+            status.innerHTML = `
+                <span style="color:var(--accent)">
+                    ✅ Project generated successfully
+                </span>
+            `;
+
+            document.getElementById('chatPanel').style.display =
+                'flex';
+
+        }else{
+
+            status.innerHTML = `
+                <span style="color:var(--danger)">
+                    ❌ Backend returned no HTML
+                </span>
+            `;
+        }
+
+    }catch(err){
+
+        console.error(err);
+
+        status.innerHTML = `
+            <span style="color:var(--danger)">
+                ❌ ${err.message}
+            </span>
+        `;
+    }
+}
+
+function openFile(name){
+
+    currentFile = name;
+
+    document.getElementById('editor').value =
+        projectFiles[name] || '';
+}
+
+function saveEdits(){
+
+    projectFiles[currentFile] =
+        document.getElementById('editor').value;
+
+    updatePreview();
+}
+
+function togglePreview(){
+
+    const editor =
+        document.getElementById('editor');
+
+    const preview =
+        document.getElementById('preview');
+
+    if(preview.style.display === 'block'){
+
+        preview.style.display = 'none';
+        editor.style.display = 'block';
+
+    }else{
+
+        updatePreview();
+
+        preview.style.display = 'block';
+        editor.style.display = 'none';
+    }
+}
+
+function updatePreview(){
+
+    const frame =
+        document.getElementById('preview');
+
+    frame.srcdoc =
+        projectFiles['index.html'] || '';
+}
+
+function toggleChat(){
+
+    const chat =
+        document.getElementById('chatPanel');
+
+    chat.style.display =
+        chat.style.display === 'none'
+            ? 'flex'
+            : 'none';
+}
+
+async function sendChat(){
+
+    const input =
+        document.getElementById('chatInput');
+
+    const msg =
+        input.value.trim();
+
+    if(!msg) return;
+
+    const messages =
+        document.getElementById('chatMessages');
+
+    messages.innerHTML += `
+        <div class="msg user">
+            ${msg}
+        </div>
+    `;
+
+    input.value = '';
+
+    try{
+
+        const res = await fetch('/execute',{
+            method:'POST',
+            headers:{
+                'Content-Type':'application/json'
+            },
+            body:JSON.stringify({
+                goal:msg
+            })
+        });
+
+        const txt = await res.text();
+
+        messages.innerHTML += `
+            <div class="msg agent">
+                🤖 ${txt}
+            </div>
+        `;
+
+    }catch(err){
+
+        messages.innerHTML += `
+            <div class="msg agent">
+                ❌ ${err.message}
+            </div>
+        `;
+    }
+
+    messages.scrollTop =
+        messages.scrollHeight;
+}
+</script>
+
+</body>
+</html>

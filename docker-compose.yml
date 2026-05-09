@@ -1,0 +1,13 @@
+version: '3.8'
+services:
+  sps:
+    build: .
+    ports:
+      - "9101:9101"
+      - "9103:9103"
+    environment:
+      - SPS_API_KEY=changeme
+    volumes:
+      - sps_data:/data
+volumes:
+  sps_data:

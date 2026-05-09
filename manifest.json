@@ -1,0 +1,8 @@
+{
+  "name": "SPS Embryo",
+  "short_name": "SPS",
+  "start_url": "/dashboard",
+  "display": "standalone",
+  "background_color": "#050a14",
+  "theme_color": "#00c8f0"
+}

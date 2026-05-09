@@ -1,0 +1,13 @@
+{
+  "openapi": "3.0.0",
+  "info": { "title": "SPS Embryo API", "version": "1.0.0" },
+  "paths": {
+    "/execute": {
+      "post": {
+        "summary": "تنفيذ مهمة",
+        "requestBody": { "content": { "application/json": { "schema": { "type": "object", "properties": { "goal": { "type": "string" } } } } } },
+        "responses": { "200": { "description": "الرد" } }
+      }
+    }
+  }
+}

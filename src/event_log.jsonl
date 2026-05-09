@@ -1,0 +1,3 @@
+{"id":1,"tick":1,"payload":"init"}
+{"id":2,"tick":2,"payload":"request_api_call"}
+{"id":3,"tick":3,"payload":"finish"}

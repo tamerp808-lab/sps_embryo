@@ -1,0 +1,5 @@
+node_id = 1
+port = 9101
+metrics_port = 9201
+peers = []
+partitions = [1]

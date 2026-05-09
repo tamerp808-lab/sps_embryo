@@ -1,0 +1,13 @@
+{
+  "tick": 3,
+  "state": {
+    "counter": 3,
+    "history": [
+      "init",
+      "request_api_call",
+      "finish"
+    ]
+  },
+  "state_hash": "b9b61441eb3f99f4de8a157241fed86f01036887338611356f5fb2576c28fb7e",
+  "event_count": 3
+}

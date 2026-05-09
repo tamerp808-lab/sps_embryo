@@ -1,0 +1,5 @@
+target/
+backups/
+*.db
+*.lock
+*.tar.gz
